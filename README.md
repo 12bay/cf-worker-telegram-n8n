@@ -96,3 +96,5 @@ Truy cập tài liệu tích hợp bằng cách truy cập URL gốc của worke
 ```
 https://{URL_WORKER}/
 ```
+
+## THANK YOU FOR  tuanpb99/cf-worker-telegram
