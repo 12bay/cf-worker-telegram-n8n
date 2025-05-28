@@ -20,6 +20,7 @@ Chạy trên Cloudflare Worker, đơn giản hoạt động như một proxy cho
 https://proxy-tele.12bay.worbkers.dev
 
 
+
 ## Tính năng
 
 - Chạy tất cả các phương thức của Telegram Bot API
@@ -28,7 +29,8 @@ https://proxy-tele.12bay.worbkers.dev
 - Trang tài liệu tích hợp sẵn
 - Hỗ trợ tất cả các phương thức HTTP (GET, POST, PUT, DELETE)
 - Auto Webhook proxy callback for N8N
-- 
+
+  <img width="1049" alt="image" src="https://github.com/user-attachments/assets/ff196ffc-d0e1-4fde-9c4e-f84f5c185bb4" />
 
 ## Cài đặt
 
