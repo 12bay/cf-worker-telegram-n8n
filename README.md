@@ -63,7 +63,7 @@ Sử dụng proxy này:
 https://{URL_WORKER_CỦA_BẠN}/bot{TOKEN_BOT_CỦA_BẠN}/sendMessage
 ```
 
-Sử dụng proxy WEBHOOK để khai báo tele này:
+Sử dụng proxy WEBHOOK để khai báo setWebhook trên tele này:
 ```
 https://{URL_WORKER_CỦA_BẠN}/xhook?url={WEB_HOOK_URK_CỦA_BẠN}
 ví dụ : 
