@@ -20,6 +20,8 @@ Chạy trên Cloudflare Worker, đơn giản hoạt động như một proxy cho
 - Hiệu suất cao với mạng lưới toàn cầu của Cloudflare
 - Trang tài liệu tích hợp sẵn
 - Hỗ trợ tất cả các phương thức HTTP (GET, POST, PUT, DELETE)
+- Auto Webhook proxy callback for N8N
+- 
 
 ## Cài đặt
 
@@ -45,6 +47,14 @@ Sử dụng proxy này:
 ```
 https://{URL_WORKER_CỦA_BẠN}/bot{TOKEN_BOT_CỦA_BẠN}/sendMessage
 ```
+
+Điền thông tin vào trong N8N
+Thay api.telegram.org lại thành 
+
+```
+https://{URL_WORKER_CỦA_BẠN}
+```
+
 
 ### Ví dụ Code
 
