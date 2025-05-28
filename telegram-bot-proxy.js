@@ -1,11 +1,12 @@
 // Telegram Bot API base URL
 const TELEGRAM_API_BASE = 'https://api.telegram.org';
+const TELEGRAM_PROXY_BASE = '/xhook?url=';
 
 // HTML template for documentation
 const DOC_HTML = `<!DOCTYPE html>
 <html>
 <head>
-    <title>Telegram Bot API Proxy Documentation</title>
+    <title>Telegram Bot API Proxy Documentation - 12bay.vn</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
@@ -40,7 +41,7 @@ const DOC_HTML = `<!DOCTYPE html>
     </style>
 </head>
 <body>
-    <h1>Telegram Bot API Proxy</h1>
+    <h1>Telegram Bot API Proxy - N8N PROXY</h1>
     <p>This service acts as a transparent proxy for the Telegram Bot API. It allows you to bypass network restrictions and create middleware for your Telegram bot applications.</p>
     
     <h2>How to Use</h2>
@@ -61,6 +62,9 @@ const DOC_HTML = `<!DOCTYPE html>
         <li>Full CORS support for browser-based applications</li>
         <li>Transparent proxying of responses</li>
         <li>Maintains original status codes and headers</li>
+        <li>Support Webhook callback for N8N</li>
+        <div class="code"> https://{YOUR_WORKER_URL}/bot{YOUR_BOT_TOKEN}/getWebhookInfo</div>
+
     </ul>
 
     <div class="note">
@@ -83,12 +87,89 @@ fetch('https://{YOUR_WORKER_URL}/bot{YOUR_BOT_TOKEN}/sendMessage', {
 .then(response => response.json())
 .then(data => console.log(data));
     </div>
+
+    <div class="note">
+        <strong>Credit:</strong> https://github.com/tuanpb99/cf-worker-telegram.
+    </div>
 </body>
 </html>`;
 
-async function handleRequest(request) {
+
+
+
+async function handleRequestToHook(request) {
   // Clone the request to modify it
   const requestClone = new Request(request);
+  const url = new URL(request.url);
+
+  // If accessing the root path, show documentation
+  if (url.pathname === '/' || url.pathname === '') {
+    return new Response(DOC_HTML, {
+      headers: {
+        'Content-Type': 'text/html;charset=UTF-8',
+        'Cache-Control': 'public, max-age=3600',
+      },
+    });
+  }
+
+  
+
+  // Extract the bot token and method from the URL path
+  // Expected format: /bot{token}/{method}
+  const pathParts = url.pathname.split('/').filter(Boolean);
+  
+  if (!pathParts[0].startsWith('xhook')) {
+    return new Response('Invalid hook request format', { status: 400 });
+  }
+
+
+
+  // Reconstruct the HOOK API URL
+  const hookUrl = new URL(url.search.replace("?url=",""));
+
+  // Create headers for the new request
+  const headers = new Headers(request.headers);
+  
+  const rqBody = await requestClone.arrayBuffer()
+  //console.log(rqBody);
+
+  //var requestBody = await request.arrayBuffer()
+  // Forward the request to Telegram API
+
+  const telegramRequest = new Request(hookUrl, {
+    method: requestClone.method,
+    headers: headers,
+    body: requestClone.method !== 'GET' ?  rqBody : undefined,
+    redirect: 'follow',
+  });
+
+  try {
+    const response = await fetch(telegramRequest);
+
+    const responseBody = await response.arrayBuffer();
+    
+    // Create a new response with the Telegram API response
+    const newResponse = new Response(responseBody, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers,
+    });
+
+    // Add CORS headers to allow requests from any origin
+    newResponse.headers.set('Access-Control-Allow-Origin', '*');
+    newResponse.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    newResponse.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+
+    return newResponse;
+  } catch (error) {
+    return new Response(`Error proxying request: ${error.message}`, { status: 500 });
+  }
+}
+
+async function handleRequestToTele(request) {
+  // Clone the request to modify it
+  const requestClone = new Request(request);
+
   const url = new URL(request.url);
 
   // If accessing the root path, show documentation
@@ -109,27 +190,73 @@ async function handleRequest(request) {
     return new Response('Invalid bot request format', { status: 400 });
   }
 
-  // Reconstruct the Telegram API URL
-  const telegramUrl = new URL(
+  var telegramUrl = new URL(
     `${TELEGRAM_API_BASE}${url.pathname}${url.search}`
   );
 
-  // Create headers for the new request
-  const headers = new Headers(request.headers);
+
+
+var bodyText = Object()
+
+// handle set webhook
+const headers = new Headers(request.headers);
+
+if(url.pathname.endsWith("hook")){
+
+  var x = url.search.replace("url=","url="+TELEGRAM_PROXY_BASE)
+
+  console.log(url.origin);
+
+  telegramUrl = new URL(
+    `${TELEGRAM_API_BASE}${url.pathname}${url.searchParams}`
+  );
+
+  const requestCloneB = requestClone.clone();
+  var bodyText = await requestCloneB.json(); // Lần 1: dùng clone để log
+
+
+  bodyText['url'] = url.origin+TELEGRAM_PROXY_BASE + bodyText['url']
   
+  var newbody = JSON.stringify(bodyText);
+
+  //var requestBody = await request.arrayBuffer()
   // Forward the request to Telegram API
-  const telegramRequest = new Request(telegramUrl, {
+
+   telegramRequest = new Request(telegramUrl, {
     method: requestClone.method,
     headers: headers,
-    body: requestClone.method !== 'GET' ? await request.clone().arrayBuffer() : undefined,
+    body: requestClone.method !== 'GET' ?  newbody : undefined,
     redirect: 'follow',
   });
+  
+
+
+}else{
+
+
+   const headers = new Headers(request.headers);
+   const rqBody = await requestClone.arrayBuffer()
+
+  var telegramRequest = new Request(telegramUrl, {
+    method: requestClone.method,
+    headers: headers,
+    body: requestClone.method !== 'GET' ?  rqBody : undefined,
+    redirect: 'follow',
+  });
+}
+
+
+
+
+
 
   try {
     const response = await fetch(telegramRequest);
+
+    const responseBody = await response.arrayBuffer();
     
     // Create a new response with the Telegram API response
-    const newResponse = new Response(response.body, {
+    const newResponse = new Response(responseBody, {
       status: response.status,
       statusText: response.statusText,
       headers: response.headers,
@@ -146,8 +273,9 @@ async function handleRequest(request) {
   }
 }
 
+
 // Handle OPTIONS requests for CORS
-function handleOptions(request) {
+function handleOptionsToTele(request) {
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
@@ -164,11 +292,24 @@ function handleOptions(request) {
 // Main event listener for the worker
 addEventListener('fetch', event => {
   const request = event.request;
+  const url = new URL(request.url);
+
   
-  // Handle CORS preflight requests
+  //https://proxy-tele.12bay.workers.dev/xhook?url=https://n8n.12bay.vn/webhook/ff94e973-2366-4c1c-92a1-5ba31a156629/webhook
+  // Call back HOOOK
+  if (url.pathname.startsWith("/xhook")) {
+   
+    event.respondWith(handleRequestToHook(request));
+
+  }else{
+
+    // Handle CALL TO TELE preflight requests
   if (request.method === 'OPTIONS') {
-    event.respondWith(handleOptions(request));
+    event.respondWith(handleOptionsToTele(request));
   } else {
-    event.respondWith(handleRequest(request));
+    event.respondWith(handleRequestToTele(request));
   }
+
+  }
+
 }); 
