@@ -12,9 +12,15 @@
 
 A lightweight and efficient Cloudflare Worker that acts as a transparent proxy for the Telegram Bot API. This proxy allows you to bypass network restrictions and create middleware for Telegram bot applications.
 
+
+
 # Tiếng Việt
 
 Chạy trên Cloudflare Worker, đơn giản hoạt động như một proxy cho Telegram Bot API. Proxy này cho phép bạn vượt qua các hạn chế mạng và tạo middleware cho các ứng dụng bot Telegram.
+
+Support đầy đủ cho N8N.
+Vượt chặn request webhook từ tele api.
+
 
 ##DEMO - PROXY 
 https://proxy-tele.12bay.worbkers.dev
@@ -55,6 +61,13 @@ https://api.telegram.org/bot{TOKEN_BOT_CỦA_BẠN}/sendMessage
 Sử dụng proxy này:
 ```
 https://{URL_WORKER_CỦA_BẠN}/bot{TOKEN_BOT_CỦA_BẠN}/sendMessage
+```
+
+Sử dụng proxy WEBHOOK để khai báo tele này:
+```
+https://{URL_WORKER_CỦA_BẠN}/xhook?url={WEB_HOOK_URK_CỦA_BẠN}
+ví dụ : 
+https://proxy-tele.12bay.workers.dev/xhook?url=https://n8n.n8ncua.vn/webhook-test/f70dd980-904a-4f49-a787-c971e0aad49d/webhook
 ```
 
 Điền thông tin vào trong N8N
