@@ -5,6 +5,9 @@
 ![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-orange?logo=cloudflare)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+
+
+
 # English
 
 A lightweight and efficient Cloudflare Worker that acts as a transparent proxy for the Telegram Bot API. This proxy allows you to bypass network restrictions and create middleware for Telegram bot applications.
@@ -12,6 +15,10 @@ A lightweight and efficient Cloudflare Worker that acts as a transparent proxy f
 # Tiếng Việt
 
 Chạy trên Cloudflare Worker, đơn giản hoạt động như một proxy cho Telegram Bot API. Proxy này cho phép bạn vượt qua các hạn chế mạng và tạo middleware cho các ứng dụng bot Telegram.
+
+##DEMO - PROXY 
+https://proxy-tele.12bay.worbkers.dev/xhook
+
 
 ## Tính năng
 
